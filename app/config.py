@@ -5,45 +5,51 @@ Loads environment variables and provides configuration settings
 
 import os
 from typing import Optional
-from pydantic_settings import BaseSettings
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 
-class Settings(BaseSettings):
+class Settings:
     """Application settings loaded from environment variables"""
     
     # Application
-    APP_NAME: str = "Heaven Connect Communication Server"
-    APP_VERSION: str = "1.0.0"
-    DEBUG: bool = False
+    APP_NAME: str = os.getenv("APP_NAME", "Heaven Connect Communication Server")
+    APP_VERSION: str = os.getenv("APP_VERSION", "1.0.0")
+    DEBUG: bool = os.getenv("DEBUG", "False").lower() == "true"
     
     # Zoho Email Configuration
-    # Using empty strings as defaults to allow app startup without .env file
-    # These will be validated when services are actually used
-    ZOHO_CLIENT_ID: str = ""
-    ZOHO_CLIENT_SECRET: str = ""
-    ZOHO_REFRESH_TOKEN: str = ""
-    ZOHO_ACCOUNT_ID: str = ""
-    ZOHO_FROM_EMAIL: str = ""
-    ZOHO_FROM_NAME: Optional[str] = "Heaven Connect"
-    ZOHO_API_DOMAIN: str = "https://mail.zoho.in"
+    ZOHO_CLIENT_ID: str = os.getenv("ZOHO_CLIENT_ID", "")
+    ZOHO_CLIENT_SECRET: str = os.getenv("ZOHO_CLIENT_SECRET", "")
+    ZOHO_REFRESH_TOKEN: str = os.getenv("ZOHO_REFRESH_TOKEN", "")
+    ZOHO_ACCOUNT_ID: str = os.getenv("ZOHO_ACCOUNT_ID", "")
+    ZOHO_FROM_EMAIL: str = os.getenv("ZOHO_FROM_EMAIL", "")
+    ZOHO_FROM_NAME: Optional[str] = os.getenv("ZOHO_FROM_NAME", "Heaven Connect")
+    ZOHO_API_DOMAIN: str = os.getenv("ZOHO_API_DOMAIN", "https://mail.zoho.in")
     
     # Auth0 Configuration (for Zoho authentication)
-    AUTH0_DOMAIN: Optional[str] = None
-    AUTH0_CLIENT_ID: Optional[str] = None
-    AUTH0_CLIENT_SECRET: Optional[str] = None
-    AUTH0_AUDIENCE: Optional[str] = None
+    AUTH0_DOMAIN: Optional[str] = os.getenv("AUTH0_DOMAIN")
+    AUTH0_CLIENT_ID: Optional[str] = os.getenv("AUTH0_CLIENT_ID")
+    AUTH0_CLIENT_SECRET: Optional[str] = os.getenv("AUTH0_CLIENT_SECRET")
+    AUTH0_AUDIENCE: Optional[str] = os.getenv("AUTH0_AUDIENCE")
     
     # OneSignal Configuration
-    # Using empty strings as defaults to allow app startup without .env file
-    # These will be validated when services are actually used
-    ONESIGNAL_APP_ID: str = ""
-    ONESIGNAL_REST_API_KEY: str = ""
-    ONESIGNAL_API_URL: str = "https://onesignal.com/api/v1"
+    ONESIGNAL_APP_ID: str = os.getenv("ONESIGNAL_APP_ID", "")
+    ONESIGNAL_REST_API_KEY: str = os.getenv("ONESIGNAL_REST_API_KEY", "")
+    ONESIGNAL_API_URL: str = os.getenv("ONESIGNAL_API_URL", "https://onesignal.com/api/v1")
+
+    # Database Configuration
+    DB_HOST: str = os.getenv("DB_HOST", "localhost")
+    DB_PORT: int = int(os.getenv("DB_PORT", "3306"))
+    DB_USER: str = os.getenv("DB_USER", "root")
+    DB_PASSWORD: str = os.getenv("DB_PASSWORD", "")
+    DB_NAME: str = os.getenv("DB_NAME", "heaven_connect_communication")
     
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
-        case_sensitive = True
+    @property
+    def DATABASE_URL(self) -> str:
+        """Construct database URL from settings"""
+        return f"mysql+pymysql://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
     
     def validate_zoho_config(self) -> bool:
         """Validate that all required Zoho configuration is present"""
@@ -62,6 +68,4 @@ class Settings(BaseSettings):
 
 
 # Global settings instance
-# Will load from .env file if it exists, otherwise use defaults
 settings = Settings()
-

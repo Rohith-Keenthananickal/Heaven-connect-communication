@@ -9,7 +9,7 @@ from pydantic import BaseModel, Field
 class PushNotificationRequest(BaseModel):
     """Request model for sending push notifications"""
     
-    user_ids: Optional[List[str]] = Field(None, description="List of OneSignal user IDs (player IDs)")
+    player_ids: Optional[List[str]] = Field(None, description="List of OneSignal user IDs (player IDs)")
     segments: Optional[List[str]] = Field(None, description="List of OneSignal segments to target")
     headings: Dict[str, str] = Field(..., description="Notification headings in different languages")
     contents: Dict[str, str] = Field(..., description="Notification contents in different languages")

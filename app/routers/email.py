@@ -9,7 +9,7 @@ from app.models.schedule import ScheduleRequest, ScheduleResponse
 from app.services.email_service import EmailService
 from app.services.scheduler_service import SchedulerService
 
-router = APIRouter(prefix="/api/v1/email", tags=["Email"])
+router = APIRouter(prefix="/api/email", tags=["Email"])
 
 # Initialize services
 email_service = EmailService()

@@ -21,7 +21,7 @@ class PushNotificationService:
     
     async def send_notification(
         self,
-        user_ids: Optional[List[str]] = None,
+        player_ids: Optional[List[str]] = None,
         segments: Optional[List[str]] = None,
         headings: Dict[str, str] = None,
         contents: Dict[str, str] = None,
@@ -34,7 +34,7 @@ class PushNotificationService:
         Send a push notification using OneSignal API
         
         Args:
-            user_ids: List of OneSignal user IDs (player IDs) to target
+            player_ids: List of OneSignal user IDs (player IDs) to target
             segments: List of OneSignal segments to target
             headings: Notification headings in different languages
             contents: Notification contents in different languages
@@ -60,12 +60,12 @@ class PushNotificationService:
                     ),
                 }
             
-            if not user_ids and not segments:
+            if not player_ids and not segments:
                 return {
                     "success": False,
                     "notification_id": None,
                     "recipients_count": 0,
-                    "message": "Either user_ids or segments must be provided",
+                    "message": "Either player_ids or segments must be provided",
                     "error": "Missing target audience",
                 }
             
@@ -78,8 +78,8 @@ class PushNotificationService:
             }
             
             # Set target audience
-            if user_ids:
-                notification_payload["include_player_ids"] = user_ids
+            if player_ids:
+                notification_payload["include_player_ids"] = player_ids
             elif segments:
                 notification_payload["included_segments"] = segments
             

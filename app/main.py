@@ -8,8 +8,9 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
-from app.routers import email, push_notification
+from app.routers import email, push_notification, player
 from app.services.scheduler_service import scheduler
+from app.database import engine, Base, check_connection
 
 # Configure logging
 logging.basicConfig(
@@ -23,6 +24,17 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Manage application lifespan - start and stop scheduler"""
+    # Startup: Check database connection
+    if check_connection():
+        # Create database tables only if connection is successful
+        try:
+            Base.metadata.create_all(bind=engine)
+            logger.info("Database tables created/verified")
+        except Exception as e:
+            logger.error(f"Failed to create database tables: {e}")
+    else:
+        logger.critical("Could not connect to the database. Please check your configuration.")
+    
     # Startup: Start the scheduler
     logger.info("Starting email scheduler...")
     if not scheduler.running:
@@ -56,6 +68,7 @@ app.add_middleware(
 # Include routers
 app.include_router(email.router)
 app.include_router(push_notification.router)
+app.include_router(player.router)
 
 
 @app.get("/", tags=["Root"])

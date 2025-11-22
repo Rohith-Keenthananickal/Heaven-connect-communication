@@ -7,7 +7,7 @@ from fastapi import APIRouter, HTTPException, status
 from app.models.push_notification import PushNotificationRequest, PushNotificationResponse
 from app.services.push_notification_service import PushNotificationService
 
-router = APIRouter(prefix="/api/v1/push", tags=["Push Notifications"])
+router = APIRouter(prefix="/api/push", tags=["Push Notifications"])
 
 # Initialize push notification service
 push_service = PushNotificationService()
@@ -18,7 +18,7 @@ async def send_push_notification(notification_request: PushNotificationRequest):
     """
     Send a push notification using OneSignal API
     
-    - **user_ids**: List of OneSignal user IDs (player IDs) to target
+    - **player_ids**: List of OneSignal user IDs (player IDs) to target
     - **segments**: List of OneSignal segments to target
     - **headings**: Notification headings in different languages
     - **contents**: Notification contents in different languages
@@ -29,7 +29,7 @@ async def send_push_notification(notification_request: PushNotificationRequest):
     """
     try:
         result = await push_service.send_notification(
-            user_ids=notification_request.user_ids,
+            player_ids=notification_request.player_ids,
             segments=notification_request.segments,
             headings=notification_request.headings,
             contents=notification_request.contents,

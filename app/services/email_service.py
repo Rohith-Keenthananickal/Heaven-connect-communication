@@ -119,14 +119,19 @@ class EmailService:
                     }
                 
                 try:
+                    context_data = (
+                        template_context.model_dump(exclude_none=True)
+                        if hasattr(template_context, "model_dump")
+                        else dict(template_context)
+                    )
                     # Add current year to context if not present
                     from datetime import datetime
-                    if "current_year" not in template_context:
-                        template_context["current_year"] = datetime.now().year
+                    if "current_year" not in context_data:
+                        context_data["current_year"] = datetime.now().year
                     
                     rendered_subject, rendered_body = TemplateLoader.render_template(
                         template_type=template_type,
-                        context=template_context
+                        context=context_data
                     )
                     subject = subject or rendered_subject
                     body = rendered_body

@@ -9,6 +9,39 @@ from pydantic import BaseModel, EmailStr, Field, model_validator
 from app.templates.template_types import EmailTemplateType
 
 
+class EmailTemplateContext(BaseModel):
+    """
+    Common variables used across email templates.
+    Additional keys are allowed to support template-specific data.
+    """
+
+    subject: Optional[str] = Field(
+        None, description="Custom subject override for template-based emails"
+    )
+    user_name: Optional[str] = Field(None, description="Recipient name")
+    verification_link: Optional[str] = Field(
+        None, description="Email verification or activation link"
+    )
+    reset_link: Optional[str] = Field(
+        None, description="Password reset link used in forgot password emails"
+    )
+    otp_code: Optional[str] = Field(None, description="One-time password or verification code")
+    expiry_minutes: Optional[int] = Field(
+        None, description="Minutes remaining before an OTP or link expires"
+    )
+    guest_name: Optional[str] = Field(None, description="Guest name for booking notifications")
+    property_name: Optional[str] = Field(None, description="Property name for booking notifications")
+    check_in_date: Optional[str] = Field(None, description="ISO date for check-in")
+    check_out_date: Optional[str] = Field(None, description="ISO date for check-out")
+    booking_id: Optional[str] = Field(None, description="Booking identifier")
+    additional_context: Optional[Dict[str, Any]] = Field(
+        None, description="Catch-all for template specific variables"
+    )
+
+    class Config:
+        extra = "allow"
+
+
 class EmailRequest(BaseModel):
     """Request model for sending emails"""
     
@@ -19,7 +52,7 @@ class EmailRequest(BaseModel):
         None,
         description="Email template type to use. If provided, template_context is required."
     )
-    template_context: Optional[Dict[str, Any]] = Field(
+    template_context: Optional[EmailTemplateContext] = Field(
         None,
         description="Context variables for template rendering (required if template_type is provided)"
     )
@@ -52,7 +85,8 @@ class EmailRequest(BaseModel):
                 "template_type": "welcome",
                 "template_context": {
                     "user_name": "John Doe",
-                    "verification_link": "https://heavenconnect.com/verify?token=abc123"
+                    "verification_link": "https://heavenconnect.com/verify?token=abc123",
+                    "subject": "Welcome to Heaven Connect"
                 }
             }
         }

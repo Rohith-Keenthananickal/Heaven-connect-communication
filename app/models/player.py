@@ -39,7 +39,7 @@ class Player(Base):
     user_id = Column(CHAR(36), nullable=False, index=True)
     device_type = Column(SQLEnum(DeviceType), nullable=False)
     push_token = Column(Text, nullable=False)
-    one_signal_id = Column(Text, nullable=True, index=True, description="OneSignal player/subscription ID")
+    one_signal_id = Column(Text, nullable=True, index=True)
     device_model = Column(Text, nullable=True)
     os_version = Column(Text, nullable=True)
     app_version = Column(Text, nullable=True)

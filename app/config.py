@@ -35,9 +35,9 @@ class Settings:
     AUTH0_AUDIENCE: Optional[str] = os.getenv("AUTH0_AUDIENCE")
     
     # OneSignal Configuration
-    ONESIGNAL_APP_ID: str = os.getenv("ONESIGNAL_APP_ID", "")
-    ONESIGNAL_REST_API_KEY: str = os.getenv("ONESIGNAL_REST_API_KEY", "")
-    ONESIGNAL_API_URL: str = os.getenv("ONESIGNAL_API_URL", "https://onesignal.com/api/v1")
+    ONESIGNAL_APP_ID: str = (os.getenv("ONESIGNAL_APP_ID") or "").strip()
+    ONESIGNAL_REST_API_KEY: str = (os.getenv("ONESIGNAL_REST_API_KEY") or "").strip()
+    ONESIGNAL_API_URL: str = (os.getenv("ONESIGNAL_API_URL") or "https://onesignal.com/api/v1").strip()
 
     # Database Configuration
     DB_HOST: str = os.getenv("DB_HOST", "localhost")

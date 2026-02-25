@@ -114,6 +114,8 @@ class PushNotificationService:
                 "headings": headings or {"en": "Notification"},
                 "contents": contents or {"en": "You have a new notification"},
                 "priority": priority,
+                "target_channel": "push",
+                "android_channel_id": "535b6210-7d0b-4dd3-b154-547c62830214"
             }
             
             logger.debug(f"Sending push notification with app_id: {self.app_id[:10]}...")

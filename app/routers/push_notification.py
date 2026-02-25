@@ -18,7 +18,8 @@ async def send_push_notification(notification_request: PushNotificationRequest):
     """
     Send a push notification using OneSignal API
     
-    - **player_ids**: List of OneSignal user IDs (player IDs) to target
+    - **player_ids/user_ids**: List of OneSignal player IDs to target
+    - **subscription_ids**: List of OneSignal subscription IDs to target
     - **segments**: List of OneSignal segments to target
     - **headings**: Notification headings in different languages
     - **contents**: Notification contents in different languages
@@ -26,10 +27,13 @@ async def send_push_notification(notification_request: PushNotificationRequest):
     - **url**: URL to open when notification is clicked
     - **send_after**: Schedule notification for later (ISO 8601 format)
     - **priority**: Notification priority (0-10, default: 10)
+    
+    Note: At least one targeting method (player_ids, subscription_ids, or segments) must be provided.
     """
     try:
         result = await push_service.send_notification(
             player_ids=notification_request.player_ids,
+            subscription_ids=notification_request.subscription_ids,
             segments=notification_request.segments,
             headings=notification_request.headings,
             contents=notification_request.contents,

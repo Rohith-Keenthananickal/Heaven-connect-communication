@@ -23,6 +23,7 @@ class PushNotificationService:
     async def send_notification(
         self,
         player_ids: Optional[List[str]] = None,
+        subscription_ids: Optional[List[str]] = None,
         segments: Optional[List[str]] = None,
         headings: Dict[str, str] = None,
         contents: Dict[str, str] = None,
@@ -35,7 +36,8 @@ class PushNotificationService:
         Send a push notification using OneSignal API
         
         Args:
-            player_ids: List of OneSignal user IDs (player IDs) to target
+            player_ids: List of OneSignal player IDs to target
+            subscription_ids: List of OneSignal subscription IDs to target
             segments: List of OneSignal segments to target
             headings: Notification headings in different languages
             contents: Notification contents in different languages
@@ -94,13 +96,13 @@ class PushNotificationService:
                     ),
                 }
             
-            if not player_ids and not segments:
+            if not player_ids and not subscription_ids and not segments:
                 return {
                     "success": False,
                     "notification_id": None,
                     "recipients_count": 0,
-                    "message": "Either player_ids or segments must be provided",
-                    "error": "Missing target audience",
+                    "message": "At least one targeting method must be provided",
+                    "error": "Missing target audience. Provide player_ids, subscription_ids, or segments",
                 }
             
             # Prepare notification payload
@@ -113,11 +115,18 @@ class PushNotificationService:
             
             logger.debug(f"Sending push notification with app_id: {self.app_id[:10]}...")
             
-            # Set target audience
+            # Set target audience (can use multiple targeting methods - OneSignal will send to union of all)
             if player_ids:
                 notification_payload["include_player_ids"] = player_ids
-            elif segments:
+                logger.debug(f"Targeting {len(player_ids)} player IDs")
+            
+            if subscription_ids:
+                notification_payload["include_subscription_ids"] = subscription_ids
+                logger.debug(f"Targeting {len(subscription_ids)} subscription IDs")
+            
+            if segments:
                 notification_payload["included_segments"] = segments
+                logger.debug(f"Targeting segments: {segments}")
             
             # Add optional fields
             if data:
@@ -173,12 +182,20 @@ class PushNotificationService:
                 errors = response_data.get("errors", [])
                 warnings = response_data.get("warnings", [])
                 
-                # If recipients_count is 0, it might mean the player_ids don't exist
-                if recipients_count == 0 and player_ids:
+                # If recipients_count is 0, it might mean the targeting IDs don't exist
+                if recipients_count == 0:
+                    targeting_info = []
+                    if player_ids:
+                        targeting_info.append(f"player_ids: {player_ids}")
+                    if subscription_ids:
+                        targeting_info.append(f"subscription_ids: {subscription_ids}")
+                    if segments:
+                        targeting_info.append(f"segments: {segments}")
+                    
                     logger.warning(
                         f"Notification sent but recipients_count is 0. "
-                        f"This might mean the player_ids don't exist in OneSignal. "
-                        f"Player IDs sent: {player_ids}"
+                        f"This might mean the targeting IDs don't exist in OneSignal. "
+                        f"Targeting: {', '.join(targeting_info)}"
                     )
                 
                 # Build response message

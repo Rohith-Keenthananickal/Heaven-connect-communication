@@ -18,7 +18,7 @@ class PushNotificationRequest(BaseModel):
     """
     
     player_ids: Optional[List[str]] = Field(None, description="List of OneSignal player IDs to target")
-    user_ids: Optional[List[str]] = Field(None, description="Alias for player_ids - List of OneSignal player IDs to target")
+    user_ids: Optional[List[str]] = Field(None, description="List of application user IDs (UUIDs) - will query Player table to get OneSignal IDs")
     subscription_ids: Optional[List[str]] = Field(None, description="List of OneSignal subscription IDs to target")
     segments: Optional[List[str]] = Field(None, description="List of OneSignal segments to target")
     headings: Dict[str, str] = Field(..., description="Notification headings in different languages")
@@ -30,16 +30,15 @@ class PushNotificationRequest(BaseModel):
     
     @model_validator(mode='after')
     def validate_targeting(self):
-        """Validate that at least one targeting method is provided and map user_ids to player_ids"""
-        # Map user_ids to player_ids if player_ids is not provided
-        if self.user_ids and not self.player_ids:
-            self.player_ids = self.user_ids
+        """Validate that at least one targeting method is provided"""
+        # Note: user_ids will be processed in the router to query Player table
+        # Don't map user_ids to player_ids here - they are different things
         
         # Validate that at least one targeting method is provided
-        if not self.player_ids and not self.subscription_ids and not self.segments:
+        if not self.player_ids and not self.user_ids and not self.subscription_ids and not self.segments:
             raise ValueError(
                 "At least one targeting method must be provided: "
-                "player_ids (or user_ids), subscription_ids, or segments"
+                "player_ids, user_ids (application user IDs), subscription_ids, or segments"
             )
         
         return self
@@ -47,7 +46,7 @@ class PushNotificationRequest(BaseModel):
     model_config = ConfigDict(
         json_schema_extra={
             "example": {
-                "user_ids": ["player-id-1", "player-id-2"],
+                "user_ids": ["user-id-1", "user-id-2"],
                 "subscription_ids": ["subscription-id-1"],
                 "segments": ["Active Users"],
                 "headings": {"en": "New Booking"},

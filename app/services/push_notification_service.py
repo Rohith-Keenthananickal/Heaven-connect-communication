@@ -5,6 +5,7 @@ Handles push notifications using OneSignal API
 
 import httpx
 import logging
+import re
 from typing import List, Optional, Dict, Any
 from app.config import settings
 
@@ -23,6 +24,7 @@ class PushNotificationService:
     async def send_notification(
         self,
         player_ids: Optional[List[str]] = None,
+        external_user_ids: Optional[List[str]] = None,
         subscription_ids: Optional[List[str]] = None,
         segments: Optional[List[str]] = None,
         headings: Dict[str, str] = None,
@@ -37,6 +39,7 @@ class PushNotificationService:
         
         Args:
             player_ids: List of OneSignal player IDs to target
+            external_user_ids: List of external user IDs (push tokens) to target
             subscription_ids: List of OneSignal subscription IDs to target
             segments: List of OneSignal segments to target
             headings: Notification headings in different languages
@@ -96,13 +99,13 @@ class PushNotificationService:
                     ),
                 }
             
-            if not player_ids and not subscription_ids and not segments:
+            if not player_ids and not external_user_ids and not subscription_ids and not segments:
                 return {
                     "success": False,
                     "notification_id": None,
                     "recipients_count": 0,
                     "message": "At least one targeting method must be provided",
-                    "error": "Missing target audience. Provide player_ids, subscription_ids, or segments",
+                    "error": "Missing target audience. Provide player_ids, external_user_ids, subscription_ids, or segments",
                 }
             
             # Prepare notification payload
@@ -115,14 +118,49 @@ class PushNotificationService:
             
             logger.debug(f"Sending push notification with app_id: {self.app_id[:10]}...")
             
+            # Helper function to check if a string is a valid UUID format
+            def is_uuid_format(value: str) -> bool:
+                """Check if a string matches UUID format (with or without hyphens)"""
+                uuid_pattern = re.compile(
+                    r'^[0-9a-f]{8}-?[0-9a-f]{4}-?[0-9a-f]{4}-?[0-9a-f]{4}-?[0-9a-f]{12}$',
+                    re.IGNORECASE
+                )
+                return bool(uuid_pattern.match(value))
+            
             # Set target audience (can use multiple targeting methods - OneSignal will send to union of all)
             if player_ids:
                 notification_payload["include_player_ids"] = player_ids
                 logger.debug(f"Targeting {len(player_ids)} player IDs")
             
+            if external_user_ids:
+                notification_payload["include_external_user_ids"] = external_user_ids
+                logger.debug(f"Targeting {len(external_user_ids)} external user IDs (push tokens)")
+            
             if subscription_ids:
-                notification_payload["include_subscription_ids"] = subscription_ids
-                logger.debug(f"Targeting {len(subscription_ids)} subscription IDs")
+                # Separate subscription_ids into UUIDs and non-UUIDs
+                # OneSignal requires UUIDs for include_subscription_ids
+                # Non-UUIDs (integers, etc.) will be sent via include_external_user_ids
+                uuid_subscription_ids = []
+                non_uuid_subscription_ids = []
+                
+                for sub_id in subscription_ids:
+                    if is_uuid_format(str(sub_id)):
+                        uuid_subscription_ids.append(str(sub_id))
+                    else:
+                        non_uuid_subscription_ids.append(str(sub_id))
+                
+                # Use include_subscription_ids for valid UUIDs
+                if uuid_subscription_ids:
+                    notification_payload["include_subscription_ids"] = uuid_subscription_ids
+                    logger.debug(f"Targeting {len(uuid_subscription_ids)} subscription IDs (UUIDs)")
+                
+                # Use include_external_user_ids for non-UUIDs (integers, etc.)
+                if non_uuid_subscription_ids:
+                    # Merge with existing external_user_ids if any
+                    if "include_external_user_ids" not in notification_payload:
+                        notification_payload["include_external_user_ids"] = []
+                    notification_payload["include_external_user_ids"].extend(non_uuid_subscription_ids)
+                    logger.debug(f"Targeting {len(non_uuid_subscription_ids)} subscription IDs (non-UUIDs) via external_user_ids")
             
             if segments:
                 notification_payload["included_segments"] = segments

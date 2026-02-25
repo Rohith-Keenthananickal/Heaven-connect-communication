@@ -115,7 +115,35 @@ class PushNotificationService:
                 "contents": contents or {"en": "You have a new notification"},
                 "priority": priority,
                 "target_channel": "push",
-                "android_channel_id": "535b6210-7d0b-4dd3-b154-547c62830214"
+                "android_channel_id": "535b6210-7d0b-4dd3-b154-547c62830214",
+                "headings": { "en": "👋 Premium Update" },
+                "contents": { "en": "Check out the new features we just launched!" },
+                "subtitle": { "en": "Don't miss out on this." },
+
+                "data": {
+                    "push_type": "marketing",
+                    "target_screen": "promo_view",
+                    "internal_id": "campaign_99"
+                },
+
+                "url": "https://your-app-link.com/promo",
+
+                "big_picture": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRkQbRwgiJaCMRav_CBQElvWipPSb6AECmZ8A&s",
+                "large_icon": "https://picsum.photos/200/200",
+                "ios_attachments": { "id1": "https://picsum.photos/1024/512" },
+
+                "buttons": [
+                    { "id": "btn_shop", "text": "Shop Now", "icon": "ic_menu_cart" },
+                    { "id": "btn_later", "text": "Remind Me", "icon": "ic_menu_recent" }
+                ],
+
+                "ios_badgeType": "Increase",
+                "ios_badgeCount": 1,
+                "ios_sound": "default",
+
+                "ttl": 3600,
+                "priority": 10,
+                "collapse_id": "promo_series_1"
             }
             
             logger.debug(f"Sending push notification with app_id: {self.app_id[:10]}...")

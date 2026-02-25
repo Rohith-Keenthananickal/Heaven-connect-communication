@@ -36,6 +36,7 @@ class Player(Base):
     __tablename__ = "players"
 
     player_id = Column(CHAR(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    device_id = Column(CHAR(36), nullable=False, default=lambda: str(uuid.uuid4()))
     user_id = Column(CHAR(36), nullable=False, index=True)
     device_type = Column(SQLEnum(DeviceType), nullable=False)
     push_token = Column(Text, nullable=False)

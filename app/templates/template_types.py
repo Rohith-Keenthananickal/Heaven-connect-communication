@@ -10,41 +10,41 @@ class EmailTemplateType(str, Enum):
     """Enumeration of available email templates"""
     
     # User-related templates
-    WELCOME = "welcome"
-    USER_REGISTRATION = "user_registration"
-    EMAIL_VERIFICATION = "email_verification"
-    PASSWORD_RESET = "password_reset"
-    PASSWORD_CHANGED = "password_changed"
-    ACCOUNT_ACTIVATED = "account_activated"
-    ACCOUNT_DEACTIVATED = "account_deactivated"
+    WELCOME = "WELCOME"
+    USER_REGISTRATION = "USER_REGISTRATION"
+    EMAIL_VERIFICATION = "EMAIL_VERIFICATION"
+    PASSWORD_RESET = "PASSWORD_RESET"
+    PASSWORD_CHANGED = "PASSWORD_CHANGED"
+    ACCOUNT_ACTIVATED = "ACCOUNT_ACTIVATED"
+    ACCOUNT_DEACTIVATED = "ACCOUNT_DEACTIVATED"
     
     # Booking-related templates (Airbnb-like)
-    BOOKING_CONFIRMED = "booking_confirmed"
-    BOOKING_CANCELLED = "booking_cancelled"
-    BOOKING_REMINDER = "booking_reminder"
-    BOOKING_MODIFIED = "booking_modified"
-    CHECK_IN_REMINDER = "check_in_reminder"
-    CHECK_OUT_REMINDER = "check_out_reminder"
+    BOOKING_CONFIRMED = "BOOKING_CONFIRMED"
+    BOOKING_CANCELLED = "BOOKING_CANCELLED"
+    BOOKING_REMINDER = "BOOKING_REMINDER"
+    BOOKING_MODIFIED = "BOOKING_MODIFIED"
+    CHECK_IN_REMINDER = "CHECK_IN_REMINDER"
+    CHECK_OUT_REMINDER = "CHECK_OUT_REMINDER"
     
     # Payment-related templates
-    PAYMENT_RECEIVED = "payment_received"
-    PAYMENT_FAILED = "payment_failed"
-    PAYMENT_REMINDER = "payment_reminder"
-    INVOICE = "invoice"
+    PAYMENT_RECEIVED = "PAYMENT_RECEIVED"
+    PAYMENT_FAILED = "PAYMENT_FAILED"
+    PAYMENT_REMINDER = "PAYMENT_REMINDER"
+    INVOICE = "INVOICE"
     
     # Review-related templates
-    REVIEW_REQUEST = "review_request"
-    REVIEW_RECEIVED = "review_received"
+    REVIEW_REQUEST = "REVIEW_REQUEST"
+    REVIEW_RECEIVED = "REVIEW_RECEIVED"
     
     # Host-related templates
-    NEW_BOOKING_REQUEST = "new_booking_request"
-    BOOKING_APPROVED = "booking_approved"
-    BOOKING_DECLINED = "booking_declined"
+    NEW_BOOKING_REQUEST = "NEW_BOOKING_REQUEST"
+    BOOKING_APPROVED = "BOOKING_APPROVED"
+    BOOKING_DECLINED = "BOOKING_DECLINED"
     
     # Notification templates
-    GENERAL_NOTIFICATION = "general_notification"
-    SYSTEM_ALERT = "system_alert"
+    GENERAL_NOTIFICATION = "GENERAL_NOTIFICATION"
+    SYSTEM_ALERT = "SYSTEM_ALERT"
     
     # Custom template (for when user provides their own content)
-    CUSTOM = "custom"
+    CUSTOM = "CUSTOM"
 

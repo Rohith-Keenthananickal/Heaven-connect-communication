@@ -82,7 +82,7 @@ class EmailRequest(BaseModel):
         json_schema_extra = {
             "example": {
                 "to": ["user@example.com"],
-                "template_type": "welcome",
+                "template_type": "WELCOME",
                 "template_context": {
                     "user_name": "John Doe",
                     "verification_link": "https://heavenconnect.com/verify?token=abc123",

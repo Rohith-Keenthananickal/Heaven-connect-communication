@@ -3,13 +3,14 @@ API Router for Player (Device) Registration
 """
 
 from datetime import datetime
-from typing import List
+from typing import List, Optional
+from math import ceil
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.models.player import Player, PlayerCreate, PlayerResponse, PlayerUpdate, DeviceStatus
+from app.models.player import Player, PlayerCreate, PlayerResponse, PlayerUpdate, DeviceStatus, PlayerListResponse
 
 router = APIRouter(
     prefix="/players",
@@ -48,6 +49,7 @@ def register_player(player_in: PlayerCreate, db: Session = Depends(get_db)):
         # Update existing player
         existing_player.user_id = player_in.user_id
         existing_player.device_type = player_in.device_type
+        existing_player.one_signal_id = player_in.one_signal_id
         existing_player.device_model = player_in.device_model
         existing_player.os_version = player_in.os_version
         existing_player.app_version = player_in.app_version
@@ -63,6 +65,7 @@ def register_player(player_in: PlayerCreate, db: Session = Depends(get_db)):
         user_id=player_in.user_id,
         device_type=player_in.device_type,
         push_token=player_in.push_token,
+        one_signal_id=player_in.one_signal_id,
         device_model=player_in.device_model,
         os_version=player_in.os_version,
         app_version=player_in.app_version,
@@ -74,6 +77,55 @@ def register_player(player_in: PlayerCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_player)
     return new_player
+
+
+@router.get("", response_model=PlayerListResponse)
+def list_players(
+    page: int = Query(1, ge=1, description="Page number (1-indexed)"),
+    page_size: int = Query(10, ge=1, le=100, description="Number of items per page"),
+    user_id: Optional[str] = Query(None, description="Filter by user ID"),
+    device_type: Optional[str] = Query(None, description="Filter by device type"),
+    status: Optional[str] = Query(None, description="Filter by status"),
+    db: Session = Depends(get_db)
+):
+    """
+    Get a paginated list of players with optional filters
+    
+    - **page**: Page number (starts from 1)
+    - **page_size**: Number of items per page (1-100)
+    - **user_id**: Optional filter by user ID
+    - **device_type**: Optional filter by device type
+    - **status**: Optional filter by status (active, blocked, logout)
+    """
+    # Build query with filters
+    query = db.query(Player)
+    
+    if user_id:
+        query = query.filter(Player.user_id == user_id)
+    
+    if device_type:
+        query = query.filter(Player.device_type == device_type)
+    
+    if status:
+        query = query.filter(Player.status == status)
+    
+    # Get total count
+    total = query.count()
+    
+    # Calculate pagination
+    skip = (page - 1) * page_size
+    total_pages = ceil(total / page_size) if total > 0 else 0
+    
+    # Get paginated results
+    players = query.order_by(Player.updated_at.desc()).offset(skip).limit(page_size).all()
+    
+    return PlayerListResponse(
+        items=players,
+        total=total,
+        page=page,
+        page_size=page_size,
+        total_pages=total_pages
+    )
 
 
 @router.get("/{player_id}", response_model=PlayerResponse)

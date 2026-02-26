@@ -13,33 +13,96 @@ class EmailTemplateContext(BaseModel):
     """
     Common variables used across email templates.
     Additional keys are allowed to support template-specific data.
+    All fields are optional and should be provided based on the template type being used.
     """
 
+    # Subject and recipient info
     subject: Optional[str] = Field(
-        None, description="Custom subject override for template-based emails"
+        None, 
+        description="Custom subject override for template-based emails. If not provided, template default subject will be used."
     )
-    user_name: Optional[str] = Field(None, description="Recipient name")
+    user_name: Optional[str] = Field(
+        None, 
+        description="Recipient name (used in greetings like 'Hello {user_name}')"
+    )
+    
+    # Verification and authentication fields
     verification_link: Optional[str] = Field(
-        None, description="Email verification or activation link"
+        None, 
+        description="Email verification or account activation link (used in WELCOME, ACCOUNT_ACTIVATED templates)"
     )
     reset_link: Optional[str] = Field(
-        None, description="Password reset link used in forgot password emails"
+        None, 
+        description="Password reset link used in forgot password emails (alternative to OTP)"
     )
-    otp_code: Optional[str] = Field(None, description="One-time password or verification code")
+    otp_code: Optional[str] = Field(
+        None, 
+        description="One-time password or verification code (used in EMAIL_VERIFICATION, PASSWORD_RESET templates). Typically 4-6 digits."
+    )
     expiry_minutes: Optional[int] = Field(
-        None, description="Minutes remaining before an OTP or link expires"
+        None, 
+        description="Minutes remaining before an OTP or link expires. Used to display expiration time in email."
     )
-    guest_name: Optional[str] = Field(None, description="Guest name for booking notifications")
-    property_name: Optional[str] = Field(None, description="Property name for booking notifications")
-    check_in_date: Optional[str] = Field(None, description="ISO date for check-in")
-    check_out_date: Optional[str] = Field(None, description="ISO date for check-out")
-    booking_id: Optional[str] = Field(None, description="Booking identifier")
+    
+    # Booking-related fields
+    guest_name: Optional[str] = Field(
+        None, 
+        description="Guest name for booking notifications"
+    )
+    property_name: Optional[str] = Field(
+        None, 
+        description="Property name for booking notifications"
+    )
+    check_in_date: Optional[str] = Field(
+        None, 
+        description="ISO date for check-in (format: YYYY-MM-DD)"
+    )
+    check_out_date: Optional[str] = Field(
+        None, 
+        description="ISO date for check-out (format: YYYY-MM-DD)"
+    )
+    booking_id: Optional[str] = Field(
+        None, 
+        description="Booking identifier or reference number"
+    )
+    
+    # Additional context
     additional_context: Optional[Dict[str, Any]] = Field(
-        None, description="Catch-all for template specific variables"
+        None, 
+        description="Catch-all for template-specific variables. Use this for any custom fields not listed above."
     )
 
     class Config:
         extra = "allow"
+        json_schema_extra = {
+            "examples": [
+                {
+                    "summary": "Email verification with OTP",
+                    "value": {
+                        "subject": "Verify Your Email - Heaven Connect",
+                        "user_name": "John Doe",
+                        "otp_code": "123456",
+                        "expiry_minutes": 15
+                    }
+                },
+                {
+                    "summary": "Password reset with OTP",
+                    "value": {
+                        "user_name": "Jane Smith",
+                        "otp_code": "789012",
+                        "expiry_minutes": 10
+                    }
+                },
+                {
+                    "summary": "Welcome email with verification link",
+                    "value": {
+                        "subject": "Welcome to Heaven Connect",
+                        "user_name": "John Doe",
+                        "verification_link": "https://heavenconnect.com/verify?token=abc123"
+                    }
+                }
+            ]
+        }
 
 
 class EmailRequest(BaseModel):
@@ -80,15 +143,58 @@ class EmailRequest(BaseModel):
     
     class Config:
         json_schema_extra = {
-            "example": {
-                "to": ["user@example.com"],
-                "template_type": "WELCOME",
-                "template_context": {
-                    "user_name": "John Doe",
-                    "verification_link": "https://heavenconnect.com/verify?token=abc123",
-                    "subject": "Welcome to Heaven Connect"
+            "examples": [
+                {
+                    "summary": "Email verification with OTP",
+                    "description": "Send an email verification using OTP code",
+                    "value": {
+                        "to": ["user@example.com"],
+                        "template_type": "EMAIL_VERIFICATION",
+                        "template_context": {
+                            "subject": "Welcome to Heaven Connect",
+                            "user_name": "John Doe",
+                            "otp_code": "123456",
+                            "expiry_minutes": 15
+                        }
+                    }
+                },
+                {
+                    "summary": "Welcome email with verification link",
+                    "description": "Send a welcome email with verification link",
+                    "value": {
+                        "to": ["user@example.com"],
+                        "template_type": "WELCOME",
+                        "template_context": {
+                            "user_name": "John Doe",
+                            "verification_link": "https://heavenconnect.com/verify?token=abc123",
+                            "subject": "Welcome to Heaven Connect"
+                        }
+                    }
+                },
+                {
+                    "summary": "Password reset with OTP",
+                    "description": "Send password reset email with OTP",
+                    "value": {
+                        "to": ["user@example.com"],
+                        "template_type": "PASSWORD_RESET",
+                        "template_context": {
+                            "user_name": "John Doe",
+                            "otp_code": "654321",
+                            "expiry_minutes": 10
+                        }
+                    }
+                },
+                {
+                    "summary": "Direct email (no template)",
+                    "description": "Send a direct email without using a template",
+                    "value": {
+                        "to": ["user@example.com"],
+                        "subject": "Custom Email Subject",
+                        "body": "<h1>Hello!</h1><p>This is a custom email body.</p>",
+                        "is_html": True
+                    }
                 }
-            }
+            ]
         }
 
 

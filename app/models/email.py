@@ -42,9 +42,26 @@ class EmailTemplateContext(BaseModel):
         extra = "allow"
 
 
+def _unwrap_openapi_example_format(data: Any) -> Any:
+    """
+    Unwrap request body if sent in OpenAPI example format.
+    Some clients send: {"summary": "...", "description": "...", "value": {...}}
+    """
+    if isinstance(data, dict) and "value" in data and "to" not in data:
+        val = data.get("value")
+        if isinstance(val, dict):
+            return val
+    return data
+
+
 class EmailRequest(BaseModel):
     """Request model for sending emails"""
-    
+
+    @model_validator(mode="before")
+    @classmethod
+    def unwrap_if_openapi_example_format(cls, data: Any) -> Any:
+        return _unwrap_openapi_example_format(data)
+
     to: List[EmailStr] = Field(..., description="List of recipient email addresses")
     
     # Template-based email (preferred)

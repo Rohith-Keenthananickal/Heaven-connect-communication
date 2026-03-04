@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Your Email - Heaven Connect</title>
+</head>
+<body style="font-family: 'Segoe UI', Arial, sans-serif; line-height: 1.7; color: #2c2c2c; background: #f4f6fb; padding: 40px 0; margin: 0;">
+    <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+        <tr>
+            <td align="center">
+                <table role="presentation" cellpadding="0" cellspacing="0" width="600" style="background: #ffffff; border-radius: 20px; overflow: hidden; box-shadow: 0 30px 55px rgba(36, 48, 70, 0.14);">
+                    <tr>
+                        <td style="padding: 0;">
+                            <table role="presentation" width="100%" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                <tr>
+                                    <td style="padding: 36px;">
+                                        <table width="100%" role="presentation">
+                                            <tr>
+                                                <td style="vertical-align: middle;">
+                                                    <div style="display: inline-flex; align-items: center; gap: 16px;">
+                                                        <div style="padding: 12px; border-radius: 16px; background: rgba(255, 255, 255, 0.34); border: 1px solid rgba(255,255,255,0.22);">
+                                                            <img src="https://admin.heavenconnect.in/favicon.png" alt="Heaven Connect" width="62" height="62" style="display:block;">
+                                                        </div>
+                                                        <div>
+                                                            <h1 style="margin: 0; font-size: 30px; color: #ffffff; letter-spacing: 0.4px;">Verify Your Email</h1>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 32px;">
+                            <p style="font-size: 16px; color: #505050; margin: 0 0 16px;">Hello <strong>{{ user_name | default('there') }}</strong>,</p>
+                            <p style="font-size: 16px; color: #505050; margin: 0 0 24px;">
+                                Thank you for signing up with Heaven Connect! To complete your registration and start exploring amazing properties, please verify your email address using the One-Time Passcode (OTP) below.
+                            </p>
+                            {% if otp_code %}
+                            <div style="margin: 0 auto 28px; max-width: 320px; background: #f0f3ff; border-radius: 12px; padding: 24px; text-align: center; border: 1px solid rgba(95, 124, 251, 0.2);">
+                                <p style="margin: 0; font-size: 14px; color: #5f6c88; letter-spacing: 2px; text-transform: uppercase;">Your Verification Code</p>
+                                <p style="margin: 12px 0 0; font-size: 32px; letter-spacing: 8px; font-weight: 600; color: #3743a5;">{{ otp_code | default('000000') }}</p>
+                            </div>
+                            {% endif %}
+                            {% if expiry_minutes %}
+                            <p style="font-size: 14px; color: #8b8fa4; margin: 24px 0 0; text-align: center;">
+                                This verification code will expire in {{ expiry_minutes }} minutes.
+                            </p>
+                            {% endif %}
+                            <p style="font-size: 15px; color: #6b6b6b; margin: 24px 0 12px;">
+                                Enter this code in the verification page to complete your email verification.
+                            </p>
+                            <p style="font-size: 15px; color: #6b6b6b; margin: 32px 0 12px;">
+                                If you did not create an account with Heaven Connect, please ignore this email.
+                            </p>
+                            <p style="font-size: 15px; color: #6b6b6b; margin: 0;">
+                                Welcome aboard!<br>
+                                <strong>Team Heaven Connect</strong>
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="background: #f8f9ff; padding: 24px; text-align: center; color: #8b8fa4; font-size: 13px;">
+                            <p style="margin: 0 0 6px;">Need help? Email us at <a href="mailto:support@heavenconnect.com" style="color: #5f7cfb; text-decoration: none;">support@heavenconnect.com</a></p>
+                            <p style="margin: 0;">© {{ current_year | default('2024') }} Heaven Connect. All rights reserved.</p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

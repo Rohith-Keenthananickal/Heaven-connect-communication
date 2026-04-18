@@ -74,33 +74,25 @@ class EmailTemplateContext(BaseModel):
 
     class Config:
         extra = "allow"
+        # Each entry must be a real template_context object (not OpenAPI summary/value wrappers)
         json_schema_extra = {
             "examples": [
                 {
-                    "summary": "Email verification with OTP",
-                    "value": {
-                        "subject": "Verify Your Email - Heaven Connect",
-                        "user_name": "John Doe",
-                        "otp_code": "123456",
-                        "expiry_minutes": 15
-                    }
+                    "subject": "Verify Your Email - Heaven Connect",
+                    "user_name": "John Doe",
+                    "otp_code": "123456",
+                    "expiry_minutes": 15,
                 },
                 {
-                    "summary": "Password reset with OTP",
-                    "value": {
-                        "user_name": "Jane Smith",
-                        "otp_code": "789012",
-                        "expiry_minutes": 10
-                    }
+                    "user_name": "Jane Smith",
+                    "otp_code": "789012",
+                    "expiry_minutes": 10,
                 },
                 {
-                    "summary": "Welcome email with verification link",
-                    "value": {
-                        "subject": "Welcome to Heaven Connect",
-                        "user_name": "John Doe",
-                        "verification_link": "https://heavenconnect.com/verify?token=abc123"
-                    }
-                }
+                    "subject": "Welcome to Heaven Connect",
+                    "user_name": "John Doe",
+                    "verification_link": "https://heavenconnect.com/verify?token=abc123",
+                },
             ]
         }
 
@@ -159,58 +151,43 @@ class EmailRequest(BaseModel):
         return self
     
     class Config:
+        # Full request bodies only — do not wrap in { "summary", "value" } (that is not valid input)
         json_schema_extra = {
             "examples": [
                 {
-                    "summary": "Email verification with OTP",
-                    "description": "Send an email verification using OTP code",
-                    "value": {
-                        "to": ["user@example.com"],
-                        "template_type": "EMAIL_VERIFICATION",
-                        "template_context": {
-                            "subject": "Welcome to Heaven Connect",
-                            "user_name": "John Doe",
-                            "otp_code": "123456",
-                            "expiry_minutes": 15
-                        }
-                    }
+                    "to": ["user@example.com"],
+                    "template_type": "EMAIL_VERIFICATION",
+                    "template_context": {
+                        "subject": "Welcome to Heaven Connect",
+                        "user_name": "John Doe",
+                        "otp_code": "123456",
+                        "expiry_minutes": 15,
+                    },
                 },
                 {
-                    "summary": "Welcome email with verification link",
-                    "description": "Send a welcome email with verification link",
-                    "value": {
-                        "to": ["user@example.com"],
-                        "template_type": "WELCOME",
-                        "template_context": {
-                            "user_name": "John Doe",
-                            "verification_link": "https://heavenconnect.com/verify?token=abc123",
-                            "subject": "Welcome to Heaven Connect"
-                        }
-                    }
+                    "to": ["user@example.com"],
+                    "template_type": "WELCOME",
+                    "template_context": {
+                        "user_name": "John Doe",
+                        "verification_link": "https://heavenconnect.com/verify?token=abc123",
+                        "subject": "Welcome to Heaven Connect",
+                    },
                 },
                 {
-                    "summary": "Password reset with OTP",
-                    "description": "Send password reset email with OTP",
-                    "value": {
-                        "to": ["user@example.com"],
-                        "template_type": "PASSWORD_RESET",
-                        "template_context": {
-                            "user_name": "John Doe",
-                            "otp_code": "654321",
-                            "expiry_minutes": 10
-                        }
-                    }
+                    "to": ["user@example.com"],
+                    "template_type": "PASSWORD_RESET",
+                    "template_context": {
+                        "user_name": "John Doe",
+                        "otp_code": "654321",
+                        "expiry_minutes": 10,
+                    },
                 },
                 {
-                    "summary": "Direct email (no template)",
-                    "description": "Send a direct email without using a template",
-                    "value": {
-                        "to": ["user@example.com"],
-                        "subject": "Custom Email Subject",
-                        "body": "<h1>Hello!</h1><p>This is a custom email body.</p>",
-                        "is_html": True
-                    }
-                }
+                    "to": ["user@example.com"],
+                    "subject": "Custom Email Subject",
+                    "body": "<h1>Hello!</h1><p>This is a custom email body.</p>",
+                    "is_html": True,
+                },
             ]
         }
 
@@ -219,7 +196,7 @@ class EmailResponse(BaseModel):
     """Response model for email sending operations"""
     
     success: bool = Field(..., description="Whether the email was sent successfully")
-    message_id: Optional[str] = Field(None, description="Zoho message ID if successful")
+    message_id: Optional[str] = Field(None, description="Provider message ID if successful")
     message: str = Field(..., description="Response message")
     error: Optional[str] = Field(None, description="Error message if failed")
     

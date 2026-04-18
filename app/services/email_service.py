@@ -1,11 +1,17 @@
 """
-Zoho Email Service
-Handles email sending using Zoho Mail API with OAuth2 authentication
+Gmail SMTP email service
+Sends mail through Gmail (or Google Workspace) using SMTP and an app password.
 """
 
-import httpx
+import asyncio
 import logging
-from typing import List, Optional, Dict, Any
+import mimetypes
+import os
+import smtplib
+from email.message import EmailMessage
+from email.utils import formataddr, make_msgid
+from typing import Any, Dict, List, Optional
+
 from app.config import settings
 from app.templates.template_loader import TemplateLoader
 from app.templates.template_types import EmailTemplateType
@@ -13,66 +19,96 @@ from app.templates.template_types import EmailTemplateType
 logger = logging.getLogger(__name__)
 
 
+def _domain_from_email(addr: str) -> str:
+    if "@" in addr:
+        return addr.rsplit("@", 1)[1]
+    return "localhost"
+
+
+def _send_via_gmail_smtp(
+    *,
+    smtp_host: str,
+    smtp_port: int,
+    username: str,
+    password: str,
+    from_email: str,
+    from_name: Optional[str],
+    to: List[str],
+    subject: str,
+    body: str,
+    is_html: bool,
+    cc: Optional[List[str]],
+    bcc: Optional[List[str]],
+    reply_to: Optional[str],
+    attachments: Optional[List[str]],
+) -> str:
+    """Blocking SMTP send (invoked via asyncio.to_thread). Returns Message-ID."""
+    msg = EmailMessage()
+    msg["Subject"] = subject
+    msg["From"] = (
+        formataddr((from_name, from_email)) if from_name else from_email
+    )
+    msg["To"] = ", ".join(to)
+    if cc:
+        msg["Cc"] = ", ".join(cc)
+    if reply_to:
+        msg["Reply-To"] = reply_to
+
+    message_id = make_msgid(domain=_domain_from_email(from_email))
+    msg["Message-ID"] = message_id
+
+    if is_html:
+        msg.set_content(
+            "This message requires an HTML-capable email client.",
+            subtype="plain",
+            charset="utf-8",
+        )
+        msg.add_alternative(body, subtype="html", charset="utf-8")
+    else:
+        msg.set_content(body, subtype="plain", charset="utf-8")
+
+    for path in attachments or []:
+        if not path or not os.path.isfile(path):
+            logger.warning("Attachment path missing or not a file: %s", path)
+            continue
+        ctype, encoding = mimetypes.guess_type(path)
+        if ctype is None or encoding is not None:
+            ctype = "application/octet-stream"
+        maintype, subtype = ctype.split("/", 1)
+        with open(path, "rb") as f:
+            data = f.read()
+        msg.add_attachment(
+            data,
+            maintype=maintype,
+            subtype=subtype,
+            filename=os.path.basename(path),
+        )
+
+    envelope_to: List[str] = list(to)
+    if cc:
+        envelope_to.extend(cc)
+    if bcc:
+        envelope_to.extend(bcc)
+
+    with smtplib.SMTP(smtp_host, smtp_port, timeout=30) as smtp:
+        smtp.starttls()
+        smtp.login(username, password)
+        smtp.send_message(msg, from_addr=from_email, to_addrs=envelope_to)
+
+    return message_id
+
+
 class EmailService:
-    """Service for sending emails via Zoho Mail API"""
-    
+    """Service for sending emails via Gmail SMTP."""
+
     def __init__(self):
-        self.client_id = settings.ZOHO_CLIENT_ID
-        self.client_secret = settings.ZOHO_CLIENT_SECRET
-        self.refresh_token = settings.ZOHO_REFRESH_TOKEN
-        self.account_id = settings.ZOHO_ACCOUNT_ID
-        self.from_email = settings.ZOHO_FROM_EMAIL
-        self.from_name = settings.ZOHO_FROM_NAME
-        self.api_domain = settings.ZOHO_API_DOMAIN
-        self._access_token: Optional[str] = None
-    
-    async def _get_access_token(self) -> str:
-        """
-        Get or refresh Zoho OAuth2 access token
-        Uses refresh token to obtain a new access token
-        """
-        # Validate configuration before attempting to get token
-        if not settings.validate_zoho_config():
-            raise ValueError(
-                "Zoho configuration is incomplete. Please check your .env file and ensure "
-                "ZOHO_CLIENT_ID, ZOHO_CLIENT_SECRET, ZOHO_REFRESH_TOKEN, "
-                "ZOHO_ACCOUNT_ID, and ZOHO_FROM_EMAIL are set."
-            )
-        
-        if self._access_token:
-            return self._access_token
-        
-        token_endpoint = "https://accounts.zoho.in/oauth/v2/token"
-        
-        async with httpx.AsyncClient() as client:
-            try:
-                payload = {
-                    "grant_type": "refresh_token",
-                    "client_id": self.client_id,
-                    "client_secret": self.client_secret,
-                    "refresh_token": self.refresh_token,
-                }
-                print("--------------------------------")
-                print("Payload:", payload)
-                print("--------------------------------")
-                response = await client.post(
-                    token_endpoint,
-                    data=payload,
-                )
-                response.raise_for_status()
-                token_data = response.json()
-                self._access_token = token_data.get("access_token")
-                
-                if not self._access_token:
-                    raise ValueError("Failed to obtain access token from Zoho")
-                
-                logger.info("Successfully obtained Zoho access token")
-                return self._access_token
-                
-            except httpx.HTTPError as e:
-                logger.error(f"Error obtaining Zoho access token: {e}")
-                raise Exception(f"Failed to authenticate with Zoho: {str(e)}")
-    
+        self.smtp_host = settings.GMAIL_SMTP_HOST
+        self.smtp_port = settings.GMAIL_SMTP_PORT
+        self.username = settings.GMAIL_ADDRESS
+        self.password = settings.GMAIL_APP_PASSWORD
+        self.from_email = settings.effective_gmail_from_address()
+        self.from_name = settings.GMAIL_FROM_NAME
+
     async def send_email(
         self,
         to: List[str],
@@ -87,8 +123,8 @@ class EmailService:
         attachments: Optional[List[str]] = None,
     ) -> dict:
         """
-        Send an email using Zoho Mail API
-        
+        Send an email via Gmail SMTP.
+
         Args:
             to: List of recipient email addresses
             subject: Email subject (required if template_type not provided)
@@ -100,15 +136,22 @@ class EmailService:
             is_html: Whether the body is HTML content
             reply_to: Optional reply-to email address
             attachments: Optional list of attachment file paths
-            
+
         Returns:
-            dict: Response containing message_id and status
+            dict: Response containing message_id and status (same shape as before)
         """
         try:
-            # Configuration validation happens in _get_access_token
-            access_token = await self._get_access_token()
-            
-            # Handle template-based email
+            if not settings.validate_gmail_config():
+                return {
+                    "success": False,
+                    "message_id": None,
+                    "message": "Gmail configuration is incomplete",
+                    "error": (
+                        "Set GMAIL_ADDRESS and GMAIL_APP_PASSWORD in your environment. "
+                        "With 2-Step Verification on, use an App Password from your Google Account."
+                    ),
+                }
+
             if template_type:
                 if not template_context:
                     return {
@@ -117,25 +160,25 @@ class EmailService:
                         "message": "template_context is required when template_type is provided",
                         "error": "Missing template_context",
                     }
-                
+
                 try:
                     context_data = (
                         template_context.model_dump(exclude_none=True)
                         if hasattr(template_context, "model_dump")
                         else dict(template_context)
                     )
-                    # Add current year to context if not present
                     from datetime import datetime
+
                     if "current_year" not in context_data:
                         context_data["current_year"] = datetime.now().year
-                    
+
                     rendered_subject, rendered_body = TemplateLoader.render_template(
                         template_type=template_type,
-                        context=context_data
+                        context=context_data,
                     )
                     subject = subject or rendered_subject
                     body = rendered_body
-                    is_html = True  # Templates are always HTML
+                    is_html = True
                 except Exception as e:
                     return {
                         "success": False,
@@ -144,7 +187,6 @@ class EmailService:
                         "error": str(e),
                     }
             else:
-                # Direct email content
                 if not subject or not body:
                     return {
                         "success": False,
@@ -152,61 +194,35 @@ class EmailService:
                         "message": "subject and body are required when template_type is not provided",
                         "error": "Missing subject or body",
                     }
-            
-            # Prepare email payload according to Zoho Mail API format
-            # Based on Zoho Mail API v1 documentation
-            email_payload = {
-                "fromAddress": self.from_email,
-                "toAddress": ",".join(to),  # Comma-separated string
-                "subject": subject,
-                "content": body,
+
+            message_id = await asyncio.to_thread(
+                _send_via_gmail_smtp,
+                smtp_host=self.smtp_host,
+                smtp_port=self.smtp_port,
+                username=self.username,
+                password=self.password,
+                from_email=self.from_email,
+                from_name=self.from_name,
+                to=to,
+                subject=subject,
+                body=body,
+                is_html=is_html,
+                cc=cc,
+                bcc=bcc,
+                reply_to=reply_to,
+                attachments=attachments,
+            )
+
+            logger.info("Email sent successfully. Message-ID: %s", message_id)
+
+            return {
+                "success": True,
+                "message_id": str(message_id) if message_id else None,
+                "message": "Email sent successfully",
             }
-            
-            # Set content type
-            if is_html:
-                email_payload["mailFormat"] = "html"
-            else:
-                email_payload["mailFormat"] = "text"
-            
-            # Add optional fields (only if provided)
-            if cc:
-                email_payload["ccAddress"] = ",".join(cc)
-            if bcc:
-                email_payload["bccAddress"] = ",".join(bcc)
-            if reply_to:
-                email_payload["replyToAddress"] = reply_to
-            
-            # Zoho Mail API endpoint
-            api_url = f"{self.api_domain}/api/accounts/{self.account_id}/messages"
-            
-            headers = {
-                "Authorization": f"Zoho-oauthtoken {access_token}",
-                "Content-Type": "application/json",
-            }
-            
-            async with httpx.AsyncClient(timeout=30.0) as client:
-                response = await client.post(
-                    api_url,
-                    json=email_payload,
-                    headers=headers,
-                )
-                
-                response.raise_for_status()
-                response_data = response.json()
-                
-                # Extract message ID from response
-                message_id = response_data.get("data", {}).get("messageId") or response_data.get("messageId")
-                
-                logger.info(f"Email sent successfully. Message ID: {message_id}")
-                
-                return {
-                    "success": True,
-                    "message_id": str(message_id) if message_id else None,
-                    "message": "Email sent successfully",
-                }
-                
-        except httpx.HTTPStatusError as e:
-            error_msg = f"HTTP error sending email: {e.response.status_code} - {e.response.text}"
+
+        except smtplib.SMTPException as e:
+            error_msg = f"SMTP error sending email: {e}"
             logger.error(error_msg)
             return {
                 "success": False,
@@ -223,4 +239,3 @@ class EmailService:
                 "message": "Failed to send email",
                 "error": error_msg,
             }
-

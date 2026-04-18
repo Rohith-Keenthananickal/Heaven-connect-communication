@@ -19,7 +19,7 @@ scheduler_service = SchedulerService()
 @router.post("/send", response_model=EmailResponse, status_code=status.HTTP_200_OK)
 async def send_email(email_request: EmailRequest):
     """
-    Send an email using Zoho Mail API
+    Send an email using Gmail SMTP
     
     Supports two modes:
     1. **Template-based**: Provide `template_type` and `template_context`
@@ -187,6 +187,6 @@ async def email_health_check():
     return {
         "status": "healthy",
         "service": "email",
-        "provider": "zoho",
+        "provider": "gmail",
     }
 

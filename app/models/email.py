@@ -66,6 +66,38 @@ class EmailTemplateContext(BaseModel):
         description="Booking identifier or reference number"
     )
     
+    # Host-related fields
+    atp_name: Optional[str] = Field(
+        None,
+        description="Name of the ATP (Approval Team Person) for host registration notifications"
+    )
+    host_name: Optional[str] = Field(
+        None,
+        description="Name of the host for host registration notifications"
+    )
+    location: Optional[str] = Field(
+        None,
+        description="Location of the registered property for host registration notifications"
+    )
+
+    # Issue reporting fields
+    issue: Optional[str] = Field(
+        None,
+        description="Summary of the support issue"
+    )
+    description: Optional[str] = Field(
+        None,
+        description="Detailed description of the support issue"
+    )
+    issue_code: Optional[str] = Field(
+        None,
+        description="Unique code or identifier for the support issue"
+    )
+    attachments: Optional[List[str]] = Field(
+        None,
+        description="List of image URLs attached to the support issue"
+    )
+
     # Additional context
     additional_context: Optional[Dict[str, Any]] = Field(
         None, 
@@ -183,10 +215,46 @@ class EmailRequest(BaseModel):
                     },
                 },
                 {
-                    "to": ["user@example.com"],
-                    "subject": "Custom Email Subject",
-                    "body": "<h1>Hello!</h1><p>This is a custom email body.</p>",
-                    "is_html": True,
+                    "summary": "Support issue created",
+                    "description": "Notify user about a newly created support issue",
+                    "value": {
+                        "to": ["user@example.com"],
+                        "template_type": "SUPPORT_CREATED",
+                        "template_context": {
+                            "user_name": "John Doe",
+                            "issue": "Login problem",
+                            "description": "Cannot log in to my account after password reset.",
+                            "property_name": "Heaven Connect Platform",
+                            "issue_code": "HC-001-2026",
+                            "attachments": [
+                                "https://example.com/image1.png",
+                                "https://example.com/image2.jpg"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "summary": "New Host Registration ATP Notification",
+                    "description": "Inform ATP about a new host registration",
+                    "value": {
+                        "to": ["atp_email@example.com"],
+                        "template_type": "HOST_REGISTRATION_ATP",
+                        "template_context": {
+                            "atp_name": "ATP Team",
+                            "host_name": "New Host",
+                            "location": "Some City, Some Country"
+                        }
+                    }
+                },
+                {
+                    "summary": "Direct email (no template)",
+                    "description": "Send a direct email without using a template",
+                    "value": {
+                        "to": ["user@example.com"],
+                        "subject": "Custom Email Subject",
+                        "body": "<h1>Hello!</h1><p>This is a custom email body.</p>",
+                        "is_html": True
+                    }
                 },
             ]
         }

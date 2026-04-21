@@ -3,7 +3,7 @@ Email API router
 Handles HTTP endpoints for email operations
 """
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, Body, HTTPException, status
 from app.models.email import EmailRequest, EmailResponse, ScheduledEmailRequest
 from app.models.schedule import ScheduleRequest, ScheduleResponse
 from app.services.email_service import EmailService
@@ -15,9 +15,70 @@ router = APIRouter(prefix="/api/email", tags=["Email"])
 email_service = EmailService()
 scheduler_service = SchedulerService()
 
+SEND_EMAIL_OPENAPI_EXAMPLES = {
+    "email_verification": {
+        "summary": "Email verification with OTP",
+        "description": "Send an email verification using OTP code",
+        "value": {
+            "to": ["user@example.com"],
+            "template_type": "EMAIL_VERIFICATION",
+            "template_context": {
+                "subject": "Welcome to Heaven Connect",
+                "user_name": "John Doe",
+                "otp_code": "123456",
+                "expiry_minutes": 15,
+            },
+        },
+    },
+    "support_created": {
+        "summary": "Support issue created",
+        "description": "Notify user after creating a support issue",
+        "value": {
+            "to": ["user@example.com"],
+            "template_type": "SUPPORT_CREATED",
+            "template_context": {
+                "user_name": "John Doe",
+                "issue": "Login problem",
+                "description": "Cannot log in to my account after password reset.",
+                "property_name": "Heaven Connect Platform",
+                "issue_code": "HC-001-2026",
+                "attachments": [
+                    "https://example.com/image1.png",
+                    "https://example.com/image2.jpg",
+                ],
+            },
+        },
+    },
+    "host_registration_atp": {
+        "summary": "New Host Registration ATP Notification",
+        "description": "Inform ATP about a new host registration",
+        "value": {
+            "to": ["atp_email@example.com"],
+            "template_type": "HOST_REGISTRATION_ATP",
+            "template_context": {
+                "atp_name": "ATP Team",
+                "host_name": "New Host",
+                "location": "Some City, Some Country",
+            },
+        },
+    },
+    "direct_email": {
+        "summary": "Direct email (no template)",
+        "description": "Send a direct email without using a template",
+        "value": {
+            "to": ["user@example.com"],
+            "subject": "Custom Email Subject",
+            "body": "<h1>Hello!</h1><p>This is a custom email body.</p>",
+            "is_html": True,
+        },
+    },
+}
+
 
 @router.post("/send", response_model=EmailResponse, status_code=status.HTTP_200_OK)
-async def send_email(email_request: EmailRequest):
+async def send_email(
+    email_request: EmailRequest = Body(..., openapi_examples=SEND_EMAIL_OPENAPI_EXAMPLES)
+):
     """
     Send an email using Gmail SMTP
     
@@ -27,7 +88,14 @@ async def send_email(email_request: EmailRequest):
     
     - **to**: List of recipient email addresses
     - **template_type**: Email template type (optional, use template or direct content)
-    - **template_context**: Context variables for template (required if template_type provided)
+    - **template_context**: Context variables for template (required if template_type provided). Example for `HOST_REGISTRATION_ATP` template:
+        ```json
+        {
+            "atp_name": "ATP Team",
+            "host_name": "New Host",
+            "location": "Some City, Some Country"
+        }
+        ```
     - **subject**: Email subject (required if template_type not provided)
     - **body**: Email body (required if template_type not provided)
     - **cc**: Optional list of CC email addresses

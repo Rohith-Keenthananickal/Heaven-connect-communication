@@ -40,11 +40,15 @@ class EmailTemplateType(str, Enum):
     NEW_BOOKING_REQUEST = "NEW_BOOKING_REQUEST"
     BOOKING_APPROVED = "BOOKING_APPROVED"
     BOOKING_DECLINED = "BOOKING_DECLINED"
+    HOST_REGISTRATION_ATP = "HOST_REGISTRATION_ATP"
     
     # Notification templates
     GENERAL_NOTIFICATION = "GENERAL_NOTIFICATION"
     SYSTEM_ALERT = "SYSTEM_ALERT"
     
+    # Support tickets
+    SUPPORT_CREATED = "SUPPORT_CREATED"
+
     # Custom template (for when user provides their own content)
     CUSTOM = "CUSTOM"
 

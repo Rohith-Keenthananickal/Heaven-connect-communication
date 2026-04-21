@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verify Your Email - Triphevenco</title>
+    <title>New Host Approval Required – Triphavenco</title>
 </head>
 <body style="font-family: 'Segoe UI', Arial, sans-serif; line-height: 1.7; color: #2c2c2c; background: #f4f6fb; padding: 40px 0; margin: 0;">
     <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
@@ -23,7 +23,7 @@
                                                             <img src="https://admin.heavenconnect.in/favicon.png" alt="Heaven Connect" width="62" height="62" style="display:block;">
                                                         </div>
                                                         <div>
-                                                            <h1 style="margin: 0; font-size: 30px; color: #ffffff; letter-spacing: 0.4px;">Verify Your Email</h1>
+                                                            <h1 style="margin: 0; font-size: 30px; color: #ffffff; letter-spacing: 0.4px;">New Host Approval Required</h1>
                                                         </div>
                                                     </div>
                                                 </td>
@@ -36,29 +36,14 @@
                     </tr>
                     <tr>
                         <td style="padding: 32px;">
-                            <p style="font-size: 16px; color: #505050; margin: 0 0 16px;">Hello <strong>{{ user_name | default('there') }}</strong>,</p>
+                            <p style="font-size: 16px; color: #505050; margin: 0 0 16px;">Dear <strong>{{ atp_name | default('ATP Team') }}</strong>,</p>
                             <p style="font-size: 16px; color: #505050; margin: 0 0 24px;">
-                                Thank you for signing up with Triphevenco! To complete your registration and start exploring amazing properties, please verify your email address using the One-Time Passcode (OTP) below.
+                                A new host <strong>{{ host_name | default('N/A') }}</strong> has registered in <strong>{{ location | default('N/A') }}</strong>.
+                                Please review and approve the new registration.
                             </p>
-                            {% if otp_code %}
-                            <div style="margin: 0 auto 28px; max-width: 320px; background: #f0f3ff; border-radius: 12px; padding: 24px; text-align: center; border: 1px solid rgba(95, 124, 251, 0.2);">
-                                <p style="margin: 0; font-size: 14px; color: #5f6c88; letter-spacing: 2px; text-transform: uppercase;">Your Verification Code</p>
-                                <p style="margin: 12px 0 0; font-size: 32px; letter-spacing: 8px; font-weight: 600; color: #3743a5;">{{ otp_code | default('000000') }}</p>
-                            </div>
-                            {% endif %}
-                            {% if expiry_minutes %}
-                            <p style="font-size: 14px; color: #8b8fa4; margin: 24px 0 0; text-align: center;">
-                                This verification code will expire in {{ expiry_minutes }} minutes.
-                            </p>
-                            {% endif %}
-                            <p style="font-size: 15px; color: #6b6b6b; margin: 24px 0 12px;">
-                                Enter this code in the verification page to complete your email verification.
-                            </p>
-                            <p style="font-size: 15px; color: #6b6b6b; margin: 32px 0 12px;">
-                                If you did not create an account with Heaven Connect, please ignore this email.
-                            </p>
+
                             <p style="font-size: 15px; color: #6b6b6b; margin: 0;">
-                                Welcome aboard!<br>
+                                Best regards,<br>
                                 <strong>Team Triphevenco</strong>
                             </p>
                         </td>

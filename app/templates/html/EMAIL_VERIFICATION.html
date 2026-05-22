@@ -4,65 +4,208 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Verify Your Email - Triphavenco</title>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@400;500;600;700&display=swap');
+    </style>
 </head>
-<body style="font-family: 'Segoe UI', Arial, sans-serif; line-height: 1.7; color: #2c2c2c; background: #f4f6fb; padding: 40px 0; margin: 0;">
-    <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
-        <tr>
-            <td align="center">
-                <table role="presentation" cellpadding="0" cellspacing="0" width="600" style="background: #ffffff; border-radius: 20px; overflow: hidden; box-shadow: 0 30px 55px rgba(36, 48, 70, 0.14);">
-                    <tr>
-                        <td style="padding: 32px 36px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); text-align: center;">
-                            <table role="presentation" cellpadding="0" cellspacing="0" align="center">
-                                <tr>
-                                    <td style="background: #ffffff; border-radius: 16px; padding: 10px; text-align: center;" bgcolor="#ffffff">
-                                        <img src="https://triphavenco.com/support/Logo_color.svg" alt="Triphevenco" width="68" height="68" style="display: block;">
-                                    </td>
-                                    <td style="padding-left: 18px; text-align: left; vertical-align: middle;">
-                                        <h1 style="margin: 0 0 4px; font-size: 24px; font-weight: 700; color: #ffffff;">Verify Your Email</h1>
-                                        <p style="margin: 0; font-size: 14px; color: rgba(255,255,255,0.8);">Confirm your email to get started</p>
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 32px;">
-                            <p style="font-size: 16px; color: #505050; margin: 0 0 16px;">Hello <strong>{{ user_name | default('there') }}</strong>,</p>
-                            <p style="font-size: 16px; color: #505050; margin: 0 0 24px;">
-                                Thank you for signing up with Triphavenco! To complete your registration and start exploring amazing properties, please verify your email address using the One-Time Passcode (OTP) below.
-                            </p>
-                            {% if otp_code %}
-                            <div style="margin: 0 auto 28px; max-width: 320px; background: #f0f3ff; border-radius: 12px; padding: 24px; text-align: center; border: 1px solid rgba(95, 124, 251, 0.2);">
-                                <p style="margin: 0; font-size: 14px; color: #5f6c88; letter-spacing: 2px; text-transform: uppercase;">Your Verification Code</p>
-                                <p style="margin: 12px 0 0; font-size: 32px; letter-spacing: 8px; font-weight: 600; color: #3743a5;">{{ otp_code | default('000000') }}</p>
-                            </div>
-                            {% endif %}
-                            {% if expiry_minutes %}
-                            <p style="font-size: 14px; color: #8b8fa4; margin: 24px 0 0; text-align: center;">
-                                This verification code will expire in {{ expiry_minutes }} minutes.
-                            </p>
-                            {% endif %}
-                            <p style="font-size: 15px; color: #6b6b6b; margin: 24px 0 12px;">
-                                Enter this code in the verification page to complete your email verification.
-                            </p>
-                            <p style="font-size: 15px; color: #6b6b6b; margin: 32px 0 12px;">
-                                If you did not create an account with Triphavenco, please ignore this email.
-                            </p>
-                            <p style="font-size: 15px; color: #6b6b6b; margin: 0;">
-                                Welcome aboard!<br>
-                                <strong>Team Triphavenco</strong>
-                            </p>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="background: #f8f9ff; padding: 24px; text-align: center; color: #8b8fa4; font-size: 13px;">
-                            <p style="margin: 0 0 6px;">Need help? Email us at <a href="mailto:support@triphevenco.com" style="color: #5f7cfb; text-decoration: none;">support@triphevenco.com</a></p>
-                            <p style="margin: 0;">© {{ current_year | default('2026') }} Triphavenco. All rights reserved.</p>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-    </table>
+<body style="margin:0;padding:0;background-color:#E9F6F7;font-family:'Manrope',Arial,sans-serif;">
+
+<table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="background-color:#E9F6F7;padding:40px 16px;">
+    <tr>
+        <td align="center">
+
+            <!-- ══════════════════════════════
+                 CARD WRAPPER  (max 600px)
+            ══════════════════════════════ -->
+            <table role="presentation" cellpadding="0" cellspacing="0" width="600" style="max-width:600px;width:100%;">
+
+                <!-- ── HEADER ── -->
+                <tr>
+                    <td style="background:linear-gradient(135deg,#2BB0B8 0%,#1A8491 100%);border-radius:20px 20px 0 0;padding:0;overflow:hidden;">
+
+                        <!-- Decorative top bar -->
+                        <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+                            <tr>
+                                <td style="background-color:#FFD26E;height:4px;font-size:0;line-height:0;">&nbsp;</td>
+                            </tr>
+                        </table>
+
+                        <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+                            <tr>
+                                <!-- Left: logo + wordmark -->
+                                <td style="padding:36px 40px 32px;">
+                                    <table role="presentation" cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <!-- Logo mark in white pill -->
+                                            <td style="background:#ffffff;border-radius:14px;padding:10px 12px;vertical-align:middle;">
+                                                <img src="./Triphaven-logo.png" alt="Triphavenco logo" width="44" height="44" style="display:block;">
+                                            </td>
+                                            <td style="padding-left:16px;vertical-align:middle;">
+                                                <!-- Brand name -->
+                                                <p style="margin:0 0 2px;font-family:'Sora',Arial,sans-serif;font-size:20px;font-weight:700;color:#ffffff;letter-spacing:-0.3px;">Triphavenco</p>
+                                                <p style="margin:0;font-size:11px;color:rgba(255,255,255,0.75);letter-spacing:0.5px;font-weight:500;">Experience authentic homestays</p>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+
+                                <!-- Right: decorative compass shape (CSS only) -->
+                                <td width="120" style="vertical-align:bottom;padding-right:32px;padding-bottom:0;text-align:right;">
+                                    <!-- Decorative circle with transparency -->
+                                    <div style="width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,0.08);display:inline-block;margin-bottom:-2px;position:relative;">
+                                        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:64px;height:64px;border-radius:50%;border:2px solid rgba(255,210,110,0.35);"></div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- Hero text band -->
+                        <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+                            <tr>
+                                <td style="background:rgba(0,0,0,0.12);padding:20px 40px 28px;text-align:center;">
+                                    <h1 style="margin:0 0 6px;font-family:'Manrope',Arial,sans-serif;font-size:26px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;">Verify Your Email Address</h1>
+                                    <p style="margin:0;font-size:13px;color:rgba(255,255,255,0.75);font-weight:500;letter-spacing:0.3px;">Confirm your email to unlock your Triphavenco account</p>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+
+                <!-- ── BODY ── -->
+                <tr>
+                    <td style="background-color:#ffffff;padding:44px 48px 36px;">
+
+                        <!-- Greeting -->
+                        <p style="margin:0 0 18px;font-size:16px;color:#1F1F1F;font-weight:600;font-family:'Manrope',Arial,sans-serif;">
+                            Hello, <span style="color:#1A8491;">{{ user_name | default('Traveller') }}</span> 👋
+                        </p>
+
+                        <!-- Body copy -->
+                        <p style="margin:0 0 32px;font-size:15px;line-height:1.8;color:#4A5568;font-family:'Manrope',Arial,sans-serif;font-weight:400;">
+                            Thank you for signing up with Triphavenco! To complete your registration and start exploring amazing homestays across Kerala, please verify your email address using the One-Time Passcode below.
+                        </p>
+
+                        {% if otp_code %}
+                        <!-- ── OTP BOX ── -->
+                        <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:28px;">
+                            <tr>
+                                <td>
+                                    <!-- Outer container with teal left-border accent -->
+                                    <table role="presentation" cellpadding="0" cellspacing="0" width="100%"
+                                           style="border-radius:16px;overflow:hidden;border:1.5px solid #D6F0F2;">
+                                        <tr>
+                                            <!-- Teal accent strip on left -->
+                                            <td width="6" style="background:linear-gradient(180deg,#2BB0B8,#1A8491);font-size:0;">&nbsp;</td>
+                                            <!-- Main OTP content -->
+                                            <td style="background:#F0FBFC;padding:28px 32px;">
+                                                <p style="margin:0 0 6px;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#1A8491;font-weight:700;font-family:'Manrope',Arial,sans-serif;">Your Verification Code</p>
+                                                <p style="margin:0 0 16px;font-size:13px;color:#718096;font-family:'Manrope',Arial,sans-serif;">Enter this code to confirm your identity</p>
+
+                                                <!-- OTP digits on yellow pill -->
+                                                <table role="presentation" cellpadding="0" cellspacing="0">
+                                                    <tr>
+                                                        <td style="background:#FFD26E;border-radius:12px;padding:14px 28px;">
+                                                            <p style="margin:0;font-family:'Sora','Courier New',monospace;font-size:38px;font-weight:700;color:#1F1F1F;letter-spacing:10px;text-indent:10px;">{{ otp_code | default('000000') }}</p>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+
+                                                {% if expiry_minutes %}
+                                                <!-- Expiry row -->
+                                                <table role="presentation" cellpadding="0" cellspacing="0" style="margin-top:16px;">
+                                                    <tr>
+                                                        <!-- Clock icon circle -->
+                                                        <td style="background:#FFF3CD;border-radius:50%;width:28px;height:28px;text-align:center;vertical-align:middle;font-size:14px;line-height:28px;">⏱</td>
+                                                        <td style="padding-left:10px;font-size:13px;color:#718096;font-family:'Manrope',Arial,sans-serif;vertical-align:middle;">
+                                                            This code expires in <strong style="color:#D4A237;">{{ expiry_minutes }} minutes</strong>. Please use it promptly.
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                        {% endif %}
+
+                        <!-- Instruction step -->
+                        <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:28px;">
+                            <tr>
+                                <td style="background:#F8FAFB;border-radius:12px;padding:18px 22px;">
+                                    <table role="presentation" cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <td style="font-size:20px;vertical-align:middle;padding-right:14px;">✅</td>
+                                            <td style="font-size:14px;color:#4A5568;line-height:1.7;font-family:'Manrope',Arial,sans-serif;vertical-align:middle;">
+                                                Enter this code on the <strong style="color:#1A8491;">verification page</strong> to complete your email verification and activate your account.
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- Divider -->
+                        <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:24px;">
+                            <tr>
+                                <td style="border-top:1px solid #EDF2F7;font-size:0;">&nbsp;</td>
+                            </tr>
+                        </table>
+
+                        <!-- Security note -->
+                        <p style="margin:0 0 28px;font-size:13px;color:#A0AEC0;line-height:1.7;font-family:'Manrope',Arial,sans-serif;">
+                            🔒 &nbsp;If you did not create an account with Triphavenco, you can safely ignore this email. No action is required.
+                        </p>
+
+                        <!-- Sign-off -->
+                        <p style="margin:0;font-size:15px;color:#1F1F1F;font-family:'Manrope',Arial,sans-serif;">
+                            Warm regards,<br>
+                            <strong style="color:#1A8491;font-size:16px;">Team Triphavenco</strong>
+                        </p>
+                    </td>
+                </tr>
+
+                <!-- ── FOOTER ── -->
+                <tr>
+                    <td style="background-color:#1F1F1F;border-radius:0 0 20px 20px;padding:28px 48px;">
+
+                        <!-- Top yellow accent line -->
+                        <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:20px;">
+                            <tr>
+                                <td width="40" style="background:#FFD26E;height:2px;border-radius:2px;font-size:0;">&nbsp;</td>
+                                <td style="font-size:0;">&nbsp;</td>
+                            </tr>
+                        </table>
+
+                        <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+                            <tr>
+                                <!-- Left: help text -->
+                                <td style="vertical-align:top;">
+                                    <p style="margin:0 0 6px;font-size:12px;color:rgba(255,255,255,0.45);font-family:'Manrope',Arial,sans-serif;">Need help? Reach us at</p>
+                                    <a href="mailto:support@triphavenco.com" style="font-size:13px;color:#2BB0B8;text-decoration:none;font-weight:600;font-family:'Manrope',Arial,sans-serif;">support@triphavenco.com</a>
+                                </td>
+                                <!-- Right: copyright -->
+                                <td style="text-align:right;vertical-align:top;">
+                                    <p style="margin:0;font-size:11px;color:rgba(255,255,255,0.25);font-family:'Manrope',Arial,sans-serif;">
+                                        &copy; {{ current_year | default('2026') }} Triphavenco<br>All rights reserved.
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- Tagline -->
+                        <p style="margin:20px 0 0;font-size:11px;color:rgba(255,255,255,0.2);text-align:center;letter-spacing:1px;font-family:'Sora',Arial,sans-serif;text-transform:uppercase;">Experience Authentic Homestays · Kerala's Rich Culture</p>
+                    </td>
+                </tr>
+
+            </table>
+            <!-- end card -->
+
+        </td>
+    </tr>
+</table>
+
 </body>
 </html>

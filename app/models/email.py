@@ -8,67 +8,8 @@ from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, EmailStr, Field, model_validator
 
+from app.models.openapi_notification_examples import SEND_EMAIL_OPENAPI_EXAMPLES
 from app.templates.template_types import EmailTemplateType
-
-
-SEND_EMAIL_OPENAPI_EXAMPLES: Dict[str, Dict[str, Any]] = {
-    "email_verification": {
-        "summary": "Email verification with OTP",
-        "description": "Send an email verification using OTP code",
-        "value": {
-            "to": ["user@example.com"],
-            "template_type": "EMAIL_VERIFICATION",
-            "template_context": {
-                "subject": "Welcome to Heaven Connect",
-                "user_name": "John Doe",
-                "otp_code": "123456",
-                "expiry_minutes": 15,
-            },
-        },
-    },
-    "support_created": {
-        "summary": "Support issue created",
-        "description": "Notify user after creating a support issue",
-        "value": {
-            "to": ["user@example.com"],
-            "template_type": "SUPPORT_CREATED",
-            "template_context": {
-                "user_name": "John Doe",
-                "issue": "Login problem",
-                "description": "Cannot log in to my account after password reset.",
-                "property_name": "Heaven Connect Platform",
-                "issue_code": "HC-001-2026",
-                "attachments": [
-                    "https://example.com/image1.png",
-                    "https://example.com/image2.jpg",
-                ],
-            },
-        },
-    },
-    "host_registration_atp": {
-        "summary": "New Host Registration ATP Notification",
-        "description": "Inform ATP about a new host registration",
-        "value": {
-            "to": ["atp_email@example.com"],
-            "template_type": "HOST_REGISTRATION_ATP",
-            "template_context": {
-                "atp_name": "ATP Team",
-                "host_name": "New Host",
-                "location": "Some City, Some Country",
-            },
-        },
-    },
-    "direct_email": {
-        "summary": "Direct email (no template)",
-        "description": "Send a direct email without using a template",
-        "value": {
-            "to": ["user@example.com"],
-            "subject": "Custom Email Subject",
-            "body": "<h1>Hello!</h1><p>This is a custom email body.</p>",
-            "is_html": True,
-        },
-    },
-}
 
 
 class EmailTemplateContext(BaseModel):
@@ -91,6 +32,11 @@ class EmailTemplateContext(BaseModel):
     atp_name: Optional[str] = Field(None, description="ATP name")
     host_name: Optional[str] = Field(None, description="Host name")
     location: Optional[str] = Field(None, description="Property location")
+    area: Optional[str] = Field(None, description="ATP assigned area")
+    amount: Optional[str] = Field(None, description="Payment or refund amount")
+    checkin_date: Optional[str] = Field(None, description="Check-in date (alias: check_in_date)")
+    checkout_date: Optional[str] = Field(None, description="Check-out date (alias: check_out_date)")
+    otp: Optional[str] = Field(None, description="OTP code (alias: otp_code)")
 
     issue: Optional[str] = Field(None, description="Support issue summary")
     description: Optional[str] = Field(None, description="Support issue description")
@@ -120,8 +66,22 @@ class EmailRequest(BaseModel):
         return _unwrap_openapi_example_format(data)
 
     to: List[EmailStr] = Field(..., description="List of recipient email addresses")
-    template_type: Optional[EmailTemplateType] = Field(None, description="Email template type")
-    template_context: Optional[EmailTemplateContext] = Field(None, description="Template variables")
+    template_type: Optional[EmailTemplateType] = Field(
+        None,
+        description=(
+            "Triphavenco HTML template identifier (file: app/templates/html/{value}.html). "
+            "Use with template_context. Omit to send subject/body directly."
+        ),
+    )
+    template_context: Optional[EmailTemplateContext] = Field(
+        None,
+        description=(
+            "Variables substituted into the template (Jinja2). "
+            "Common fields: user_name, atp_name, host_name, guest_name, property_name, location, area, "
+            "checkin_date, checkout_date, check_in_date, check_out_date, amount, otp, otp_code, "
+            "issue, description, issue_code. Optional subject overrides the default."
+        ),
+    )
 
     subject: Optional[str] = Field(None, min_length=1, description="Email subject")
     body: Optional[str] = Field(None, min_length=1, description="Email body")

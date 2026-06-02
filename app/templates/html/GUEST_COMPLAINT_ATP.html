@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guest Complaint Notification - Triphavenco</title>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@400;500;600;700&display=swap');
+    </style>
+</head>
+<body style="margin:0;padding:0;background-color:#E9F6F7;font-family:'Manrope',Arial,sans-serif;">
+
+<table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="background-color:#E9F6F7;padding:40px 16px;">
+    <tr>
+        <td align="center">
+            <table role="presentation" cellpadding="0" cellspacing="0" width="600" style="max-width:600px;width:100%;">
+                <tr>
+                    <td style="background:linear-gradient(135deg,#2BB0B8 0%,#1A8491 100%);border-radius:20px 20px 0 0;padding:0;overflow:hidden;">
+                        <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+                            <tr><td style="background-color:#FFD26E;height:4px;font-size:0;line-height:0;">&nbsp;</td></tr>
+                        </table>
+                        <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+                            <tr>
+                                <td style="padding:36px 40px 32px;">
+                                    <table role="presentation" cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <td style="background:#ffffff;border-radius:14px;padding:10px 12px;vertical-align:middle;">
+                                                <img src="https://admin.triphavenco.com/Triphaven-logo.png" alt="Triphavenco logo" width="44" height="44" style="display:block;">
+                                            </td>
+                                            <td style="padding-left:16px;vertical-align:middle;">
+                                                <p style="margin:0 0 2px;font-family:'Sora',Arial,sans-serif;font-size:20px;font-weight:700;color:#ffffff;letter-spacing:-0.3px;">Triphavenco</p>
+                                                <p style="margin:0;font-size:11px;color:rgba(255,255,255,0.75);letter-spacing:0.5px;font-weight:500;">Experience authentic homestays</p>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                                <td width="120" style="vertical-align:bottom;padding-right:32px;padding-bottom:0;text-align:right;">
+                                    <div style="width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,0.08);display:inline-block;margin-bottom:-2px;position:relative;">
+                                        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:64px;height:64px;border-radius:50%;border:2px solid rgba(255,210,110,0.35);"></div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                        <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+                            <tr>
+                                <td style="background:rgba(0,0,0,0.12);padding:20px 40px 28px;text-align:center;">
+                                    <h1 style="margin:0 0 6px;font-family:'Manrope',Arial,sans-serif;font-size:26px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;">Guest Complaint Alert</h1>
+                                    <p style="margin:0;font-size:13px;color:rgba(255,255,255,0.75);font-weight:500;letter-spacing:0.3px;">A complaint requires your attention</p>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="background-color:#ffffff;padding:44px 48px 36px;">
+                        <p style="margin:0 0 18px;font-size:16px;color:#1F1F1F;font-weight:600;font-family:'Manrope',Arial,sans-serif;">
+                            Dear <span style="color:#1A8491;">{{ atp_name | default('ATP Team') }}</span>,
+                        </p>
+                        <p style="margin:0 0 32px;font-size:15px;line-height:1.8;color:#4A5568;font-family:'Manrope',Arial,sans-serif;font-weight:400;">
+                            A complaint from <strong style="color:#1A8491;">{{ guest_name | default('N/A') }}</strong> for <strong style="color:#1A8491;">{{ property_name | default('N/A') }}</strong>. Please take action.
+                        </p>
+
+                        <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:28px;">
+                            <tr>
+                                <td>
+                                    <table role="presentation" cellpadding="0" cellspacing="0" width="100%"
+                                           style="border-radius:16px;overflow:hidden;border:1.5px solid #D6F0F2;">
+                                        <tr>
+                                            <td width="6" style="background:linear-gradient(180deg,#2BB0B8,#1A8491);font-size:0;">&nbsp;</td>
+                                            <td style="background:#F0FBFC;padding:28px 32px;">
+                                                <p style="margin:0 0 16px;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#1A8491;font-weight:700;font-family:'Manrope',Arial,sans-serif;">Complaint Details</p>
+                                                <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+                                                    <tr>
+                                                        <td style="padding:8px 0;font-size:14px;color:#4A5568;font-family:'Manrope',Arial,sans-serif;line-height:1.6;">
+                                                            <strong style="color:#1A8491;">Guest:</strong> {{ guest_name | default('N/A') }}
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="padding:8px 0;font-size:14px;color:#4A5568;font-family:'Manrope',Arial,sans-serif;line-height:1.6;">
+                                                            <strong style="color:#1A8491;">Property:</strong> {{ property_name | default('N/A') }}
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                        <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:28px;">
+                            <tr>
+                                <td style="background:#F8FAFB;border-radius:12px;padding:18px 22px;">
+                                    <table role="presentation" cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <td style="font-size:20px;vertical-align:middle;padding-right:14px;">⚠️</td>
+                                            <td style="font-size:14px;color:#4A5568;line-height:1.7;font-family:'Manrope',Arial,sans-serif;vertical-align:middle;">
+                                                Please log in to the <strong style="color:#1A8491;">ATP portal</strong> to investigate and resolve this complaint.
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                        <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:24px;">
+                            <tr><td style="border-top:1px solid #EDF2F7;font-size:0;">&nbsp;</td></tr>
+                        </table>
+                        <p style="margin:0 0 28px;font-size:13px;color:#A0AEC0;line-height:1.7;font-family:'Manrope',Arial,sans-serif;">
+                            💬 &nbsp;Questions? Email us at <a href="mailto:support@triphavenco.com" style="color:#1A8491;text-decoration:none;font-weight:600;">support@triphavenco.com</a>.
+                        </p>
+                        <p style="margin:0;font-size:15px;color:#1F1F1F;font-family:'Manrope',Arial,sans-serif;">
+                            Warm regards,<br>
+                            <strong style="color:#1A8491;font-size:16px;">Team Triphavenco</strong>
+                        </p>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="background-color:#1F1F1F;border-radius:0 0 20px 20px;padding:28px 48px;">
+                        <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:20px;">
+                            <tr>
+                                <td width="40" style="background:#FFD26E;height:2px;border-radius:2px;font-size:0;">&nbsp;</td>
+                                <td style="font-size:0;">&nbsp;</td>
+                            </tr>
+                        </table>
+                        <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+                            <tr>
+                                <td style="vertical-align:top;">
+                                    <p style="margin:0 0 6px;font-size:12px;color:rgba(255,255,255,0.45);font-family:'Manrope',Arial,sans-serif;">Need help? Reach us at</p>
+                                    <a href="mailto:support@triphavenco.com" style="font-size:13px;color:#2BB0B8;text-decoration:none;font-weight:600;font-family:'Manrope',Arial,sans-serif;">support@triphavenco.com</a>
+                                </td>
+                                <td style="text-align:right;vertical-align:top;">
+                                    <p style="margin:0;font-size:11px;color:rgba(255,255,255,0.25);font-family:'Manrope',Arial,sans-serif;">
+                                        &copy; {{ current_year | default('2026') }} Triphavenco<br>All rights reserved.
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
+                        <p style="margin:20px 0 0;font-size:11px;color:rgba(255,255,255,0.2);text-align:center;letter-spacing:1px;font-family:'Sora',Arial,sans-serif;text-transform:uppercase;">Experience Authentic Homestays · Kerala's Rich Culture</p>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

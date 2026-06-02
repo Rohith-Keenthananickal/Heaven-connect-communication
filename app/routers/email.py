@@ -21,32 +21,51 @@ scheduler_service = SchedulerService()
 
 @router.post("/send", response_model=EmailResponse, status_code=status.HTTP_200_OK)
 async def send_email(
-    email_request: EmailRequest = Body(..., openapi_examples=SEND_EMAIL_OPENAPI_EXAMPLES)
+    email_request: EmailRequest = Body(
+        ...,
+        openapi_examples=SEND_EMAIL_OPENAPI_EXAMPLES,
+        description="Send a Triphavenco templated email or raw HTML via Gmail SMTP.",
+    ),
 ):
     """
-    Send an email using Gmail SMTP
-    
-    Supports two modes:
-    1. **Template-based**: Provide `template_type` and `template_context`
-    2. **Direct content**: Provide `subject` and `body` directly
-    
-    - **to**: List of recipient email addresses
-    - **template_type**: Email template type (optional, use template or direct content)
-    - **template_context**: Context variables for template (required if template_type provided). Example for `HOST_REGISTRATION_ATP` template:
-        ```json
-        {
-            "atp_name": "ATP Team",
-            "host_name": "New Host",
-            "location": "Some City, Some Country"
-        }
-        ```
-    - **subject**: Email subject (required if template_type not provided)
-    - **body**: Email body (required if template_type not provided)
-    - **cc**: Optional list of CC email addresses
-    - **bcc**: Optional list of BCC email addresses
-    - **is_html**: Whether the body is HTML content (default: True)
-    - **reply_to**: Optional reply-to email address
-    - **attachments**: Optional list of attachment file paths
+    Send an email using Gmail SMTP.
+
+    ## Modes
+
+    1. **Template-based** — set `template_type` + `template_context` (recommended).
+    2. **Direct content** — set `subject` + `body` (no template).
+
+    Use the **Examples** dropdown in Swagger to pre-fill common requests.
+
+    ## Template types
+
+    | Category | template_type | Typical context |
+    |----------|---------------|-----------------|
+    | ATP | HOST_REGISTRATION_ATP | atp_name, host_name, location |
+    | ATP | NEW_PROPERTY_SUBMITTED_ATP, PROPERTY_UPDATED_ATP | atp_name, host_name, property_name |
+    | ATP | NEW_BOOKING_ATP | atp_name, property_name, guest_name, checkin_date, checkout_date |
+    | ATP | GUEST_COMPLAINT_ATP, HOST_SUSPENDED_ATP | atp_name, guest_name, property_name / host_name |
+    | ATP | ATP_REGISTRATION_SUBMITTED, ATP_ASSIGNED_AREA | atp_name, area |
+    | ATP | ATP_APPROVED, ATP_REJECTED, ATP_ACCOUNT_ACTIVATED, ATP_ACCOUNT_SUSPENDED | atp_name |
+    | Host | HOST_REGISTRATION_SUBMITTED, HOST_ACCOUNT_* | host_name |
+    | Host | PROPERTY_APPROVED, PROPERTY_REJECTED | host_name, property_name |
+    | Host | NEW_BOOKING_RECEIVED_HOST, HOST_BOOKING_CANCELLED | host_name, guest_name, property_name |
+    | Host | GUEST_CHECK_IN_REMINDER_HOST, REVIEW_RECEIVED | host_name, guest_name, checkin_date |
+    | Common | OTP, PASSWORD_RESET | user_name, otp / otp_code |
+    | Common | PAYMENT_RECEIVED, PAYMENT_FAILED, REFUND_ISSUED | user_name, amount |
+    | Support | SUPPORT_CREATED | user_name, issue, description, issue_code |
+    | Legacy | WELCOME, EMAIL_VERIFICATION, BOOKING_* | varies |
+
+    Subject defaults come from the template registry; override with `template_context.subject`.
+
+    ## Request fields
+
+    - **to** — recipient addresses (required)
+    - **template_type** — enum value matching an HTML file under `app/templates/html/`
+    - **template_context** — required when using a template
+    - **subject**, **body** — required for direct (non-template) sends
+    - **cc**, **bcc**, **reply_to**, **attachments** — optional
+    - **is_html** — default `true`
     """
     try:
         result = await email_service.send_email(

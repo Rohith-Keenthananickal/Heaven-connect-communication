@@ -88,6 +88,7 @@ _EMAIL_SPECS: Dict[EmailTemplateType, _EmailSpec] = {
     EmailTemplateType.ATP_ACCOUNT_SUSPENDED: ("ATP", "ATP account suspended", ["atp_name"], "atp"),
     EmailTemplateType.ATP_ASSIGNED_AREA: ("ATP", "Area assigned", ["atp_name", "area"], "atp"),
     EmailTemplateType.OTP: ("Common", "OTP code", ["user_name", "otp"], "user"),
+    EmailTemplateType.LOGIN: ("Common", "Passwordless email login OTP", ["user_name", "otp_code", "expiry_minutes"], "user"),
     EmailTemplateType.PASSWORD_RESET_SUCCESSFUL: ("Common", "Password reset successful", ["user_name"], "user"),
     EmailTemplateType.REFUND_ISSUED: ("Common", "Refund issued", ["user_name", "amount"], "user"),
     EmailTemplateType.NEW_OFFER: ("Common", "New promotional offer", ["user_name"], "user"),

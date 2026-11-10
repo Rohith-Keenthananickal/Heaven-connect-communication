@@ -66,6 +66,7 @@ class EmailTemplateType(str, Enum):
 
     # Common / transactional templates
     OTP = "OTP"
+    LOGIN = "LOGIN"
     PASSWORD_RESET_SUCCESSFUL = "PASSWORD_RESET_SUCCESSFUL"
     REFUND_ISSUED = "REFUND_ISSUED"
     NEW_OFFER = "NEW_OFFER"

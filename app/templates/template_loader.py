@@ -117,6 +117,7 @@ class TemplateLoader:
             EmailTemplateType.REVIEW_RECEIVED: "New Review Received – Triphavenco",
             EmailTemplateType.HOST_ACCOUNT_SUSPENDED: "Host Account Suspended – Triphavenco",
             EmailTemplateType.OTP: "Your Triphavenco OTP Code",
+            EmailTemplateType.LOGIN: "Your Triphavenco login code",
             EmailTemplateType.PASSWORD_RESET_SUCCESSFUL: "Password Reset Successful",
             EmailTemplateType.REFUND_ISSUED: "Refund Issued – Triphavenco",
             EmailTemplateType.PAYMENT_FAILED: "Payment Failed – Triphavenco",

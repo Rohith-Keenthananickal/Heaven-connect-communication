@@ -51,7 +51,7 @@ async def send_email(
     | Host | PROPERTY_APPROVED, PROPERTY_REJECTED | host_name, property_name |
     | Host | NEW_BOOKING_RECEIVED_HOST, HOST_BOOKING_CANCELLED | host_name, guest_name, property_name |
     | Host | GUEST_CHECK_IN_REMINDER_HOST, REVIEW_RECEIVED | host_name, guest_name, checkin_date |
-    | Common | OTP, PASSWORD_RESET | user_name, otp / otp_code |
+    | Common | OTP, LOGIN, PASSWORD_RESET | user_name, otp / otp_code |
     | Common | PAYMENT_RECEIVED, PAYMENT_FAILED, REFUND_ISSUED | user_name, amount |
     | Support | SUPPORT_CREATED | user_name, issue, description, issue_code |
     | Legacy | WELCOME, EMAIL_VERIFICATION, BOOKING_* | varies |
